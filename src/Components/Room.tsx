@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface Player {
   id: string;
   name: string;
 }
 
-interface RoomProps {
-  roomId: string;
-  onJoin: (roomId: string, player: Player) => void;
-}
 
-const Room: React.FC<RoomProps> = ({ roomId, onJoin }) => {
+const Room: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [board, setBoard] = useState<string[][]>(Array(19).fill(Array(19).fill(null))); // Plansza 19x19
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const { roomId } = useParams<{ roomId: string }>();
+  const navigate = useNavigate();
 
   // Przykładowa funkcja do dołączania gracza do pokoju
   const joinRoom = (playerName: string) => {
@@ -23,7 +23,6 @@ const Room: React.FC<RoomProps> = ({ roomId, onJoin }) => {
         name: playerName
       };
       setPlayers([...players, player]);
-      onJoin(roomId, player); // Wywołanie funkcji dołączania (na przykład, powiadomienie backendu)
     } else {
       alert('Pokój jest pełny!');
     }
@@ -59,6 +58,7 @@ const Room: React.FC<RoomProps> = ({ roomId, onJoin }) => {
         {players.length < 2 && (
           <button onClick={() => joinRoom('PlayerName')}>Dołącz jako gracz</button>
         )}
+        <button onClick={() => navigate('/lobby')}>Wróć do lobby</button>
       </div>
       <div>
         <h3>Plansza do gry</h3>

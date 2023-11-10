@@ -1,12 +1,16 @@
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Lobby from './Components/Lobby';
+import Room from './Components/Room';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Witaj w Lobby!</h1>
-      <Lobby />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/room/:roomId" element={<Room />} />
+        {/* inny routing */}
+      </Routes>
+    </Router>
   );
 }
 

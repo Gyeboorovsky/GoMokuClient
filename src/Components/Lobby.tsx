@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { useNavigate } from 'react-router-dom';
+import Room from './Room';
 
 interface Room {
   id: string;
@@ -10,6 +12,7 @@ const Lobby: React.FC = () => {
   const [connection, setConnection] = useState<HubConnection | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomName, setRoomName] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -36,9 +39,9 @@ const Lobby: React.FC = () => {
           connection.on('RoomsLoaded', (loadedRooms: Room[]) => {
             setRooms(loadedRooms);
           });
-          // connection.on('JoinedToRoom', (joinedRoom: Room) => {
-
-          // })
+          connection.on('JoinedToRoom', (joinedRoom: Room) => {
+            navigate(`/room/${joinedRoom.id}`)
+          })
 
           // Pobieranie istniejących pokoi
           connection.invoke<Room[]>('GetRooms').catch(err => console.error(err));
@@ -47,10 +50,10 @@ const Lobby: React.FC = () => {
 
       // Cleanup on unmount
       return () => {
-        connection.stop();
+        connection.off('JoinedToRoom');
       };
     }
-  }, [connection]);
+  }, [connection, navigate]);
 
   const handleCreateRoom = () => {
     if (connection && roomName) {
